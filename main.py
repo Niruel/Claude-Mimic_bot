@@ -22,6 +22,8 @@ def main():
     
 
     api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY environment variable not set")
 
     client = genai.Client(api_key=api_key)
     
@@ -30,23 +32,27 @@ def main():
     if verbose:
          print(f"User prompt: {user_prompt}\n")
 
+    
     messages = [
         types.Content(role= "user", parts=[types.Part(text=user_prompt)]),
 
     ]
+    
 
     generate_content(client, messages, verbose)
     
 
 def generate_content(client, messages, verbose):
         response = client.models.generate_content(
-            model='gemini-2.0-flash-001',
+            model='gemini-2.5-flash',
             contents= messages
         )
 
         if verbose:
             print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
             print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
         print("Response:")
         print(response.text)
 
