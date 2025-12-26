@@ -1,8 +1,12 @@
+import argparse
+import sys
 import os
+
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-import sys
+
+from  prompts import system_prompt
 
 
 def main():
@@ -37,7 +41,7 @@ def main():
         types.Content(role= "user", parts=[types.Part(text=user_prompt)]),
 
     ]
-    
+   
 
     generate_content(client, messages, verbose)
     
@@ -45,15 +49,14 @@ def main():
 def generate_content(client, messages, verbose):
         response = client.models.generate_content(
             model='gemini-2.5-flash',
-            contents= messages
+            contents= messages,
+            config= types.GenerateContentConfig(system_instruction=system_prompt),
         )
 
         if verbose:
             print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
             print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-        print("Response:")
+
         print(response.text)
 
 
